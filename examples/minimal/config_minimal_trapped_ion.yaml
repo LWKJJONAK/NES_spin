@@ -1,0 +1,24 @@
+model: TrappedIon
+N: 20
+M: 80
+K: 3
+h: 2
+seed: 12345
+niters: 3
+ncpus: 1
+mc_steps_percpu: 32
+burn_in_steps: 16
+learning_rate:
+  initial: 0.05
+  decay: 0.99
+  cutoff: 0.01
+regularization:
+  lambda_init: 50
+  lambda_decay: 0.9
+  lambda_cutoff: 0.001
+minres_qlp:
+  rtol: 1.0e-10
+  maxit: 1000
+outputs:
+  correlation_data: minimal_corr.mat
+

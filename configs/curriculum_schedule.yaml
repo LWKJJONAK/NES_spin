@@ -1,0 +1,55 @@
+# Curriculum-learning schedule for the Haldane-Shastry benchmark.
+
+name: haldane_shastry_physics_informed_curriculum
+purpose: "Initialize the sign/phase structure using an easier reference Hamiltonian before optimizing the long-range target Hamiltonian."
+
+stages:
+  - stage: 1
+    label: XXZ_reference_training
+    model: XXZ
+    hamiltonian: "sum_i (-sigma_x^i sigma_x^{i+1} - sigma_y^i sigma_y^{i+1} + sigma_z^i sigma_z^{i+1})"
+    initialization: random_complex_rbm
+    objective: "train K RBMs on the stoquastic reference model"
+    output: "single-state or multi-state RBM parameters used as the reference initialization"
+
+  - stage: 2
+    label: local_unitary_sign_transform
+    model: antiferromagnetic_heisenberg
+    transform: "apply local staggered gauge/unitary transformation to encode the antiferromagnetic Heisenberg sign structure"
+    code_options:
+      load_rbm: "--load-rbm"
+      apply_gauge: "--apply-gauge"
+      inverse_gauge: "--inverse-gauge"
+    objective: "transfer learned XXZ amplitudes into a sign structure suitable for the target long-range model"
+
+  - stage: 3
+    label: haldane_shastry_target_training
+    model: HS
+    hamiltonian: "sum_{i<j} J_ij (sigma_x^i sigma_x^j + sigma_y^i sigma_y^j + sigma_z^i sigma_z^j)"
+    coupling: "J_ij = 1 / [(N/pi) sin(pi |i-j| / N)]^2"
+    initialization: "RBM parameters from stage 2"
+    objective: "continue stochastic-reconfiguration optimization on the target Haldane-Shastry Hamiltonian"
+
+shared_training_options:
+  learning_rate:
+    initial:
+      cli: "--lrate-init"
+      code_default: 0.1
+    decay:
+      cli: "--lrate-decay"
+      code_default: 0.99
+    cutoff:
+      cli: "--lrate-cutoff"
+      code_default: 0.01
+  monte_carlo:
+    samples_per_cpu:
+      cli: "--mc-steps-percpu"
+      note: "set per run according to the desired sampling budget"
+    cpu_chains:
+      cli: "--ncpus"
+      note: "each CPU/core runs an independent Markov chain"
+    burn_in_steps:
+      cli: "--burn-in-steps"
+      code_default: 64
+  solver:
+    config_file: configs/minres_qlp.yaml

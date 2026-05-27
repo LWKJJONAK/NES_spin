@@ -1,0 +1,10 @@
+name: nes-spin-repro
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy=2.1
+  - scipy=1.14
+  - matplotlib
+  - eigen
+  - matio

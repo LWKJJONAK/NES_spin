@@ -1,0 +1,20 @@
+rbm_architecture:
+  visible_units: "N physical spin variables, s_i in {+1, -1}, encoded as bits"
+  hidden_units: "M hidden units"
+  simultaneous_states: "K RBMs in the NES determinant/composite-wavefunction construction"
+  parameters_per_single_rbm:
+    visible_biases: N
+    hidden_biases: M
+    weights: "N * M"
+  complex_parameters: true
+  initialization:
+    visible_biases: "complex Gaussian / sqrt(N)"
+    hidden_biases: "complex Gaussian / sqrt(M)"
+    weights: "complex Gaussian / sqrt(N*M)"
+  typical_hidden_density:
+    ising_ed_benchmark: "M/N up to 4 for exact-diagonalization benchmarks"
+    trapped_ion_single_mode: "M around 3N or 4N balances accuracy and optimization cost"
+  implementation:
+    implementation_file: src/rbm_cpp/rbm.cc
+    spin_encoding: "std::bitset<N>, with |up> -> 0 and |down> -> 1"
+    multi_state_encoding: "std::array<std::bitset<N>, K>"

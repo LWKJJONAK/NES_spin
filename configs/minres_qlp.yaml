@@ -1,0 +1,46 @@
+# Matrix-free stochastic-reconfiguration and MINRES-QLP settings.
+
+stochastic_reconfiguration:
+  solver: MINRES-QLP
+  implementation_file: src/rbm_cpp/minresqlp.h
+  call_sites:
+    matrix_free: src/rbm_cpp/rbm.cc
+    dense_covariance: src/rbm_cpp/rbm.cc
+  covariance:
+    formulation: "C v from Monte Carlo derivative samples without explicitly storing C for MATFREE builds"
+    diagonal_regularization: "C_kk <- C_kk + lambda_t * diag(C)_k"
+  regularization:
+    lambda_init:
+      cli: "--reglam-init"
+      value: 50
+    lambda_decay:
+      cli: "--reglam-decay"
+      value: 0.9
+    lambda_cutoff:
+      cli: "--reglam-cutoff"
+      value: 0.001
+    schedule: "lambda_t = max(lambda_init * lambda_decay^t, lambda_cutoff)"
+
+minres_qlp:
+  relative_tolerance:
+    cli: "--minres-rtol"
+    value: 1.0e-10
+  maximum_iterations:
+    cli: "--minres-maxit"
+    value: "unrestricted unless specified; code default is size_t(-1)"
+  shift:
+    value: 0
+  maximum_solution_norm:
+    value: 1.0e7
+  condition_limit:
+    value: 1.0e15
+  transfer_condition:
+    value: 1.0e7
+  initial_solution:
+    value: "zero vector"
+  stopping_criteria:
+    - "relative residual <= --minres-rtol"
+    - "least-squares residual <= --minres-rtol"
+    - "machine precision reached"
+    - "maximum iterations reached"
+    - "condition or solution-norm limit reached"
