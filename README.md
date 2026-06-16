@@ -202,4 +202,11 @@ the C++ compile/run path.
 
 ## Citation
 
-If you use this code, cite the associated manuscript and this software release.
+@unpublished{Ma2025Solving,
+  title = {Solving Excited States for Long-Range Interacting Trapped Ions with Neural Networks},
+  author = {Ma, Yixuan and Liu, Chang and Li, Weikang and Zhang, Shun-Yao and Duan, L.-M. and Wu, Yukai and Deng, Dong-Ling},
+  year = 2025,
+  month = jun,
+  eprint = {2506.08594},
+  archiveprefix = {arXiv}
+}
